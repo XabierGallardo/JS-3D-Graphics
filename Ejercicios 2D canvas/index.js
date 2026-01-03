@@ -12,12 +12,13 @@
         }
 
         limpiar();
+
         
         /*
         // Practicando con canvas!
         // Dibujamos cuadros
         ctx.fillStyle = "#00ff41";
-        ctx.fillRect(50, 50, 30, 30)
+        ctx.fillRect(50, 50, 30, 30);
         
         // Dibujamos bordes
         ctx.strokeStyle = "#00ff41"; // color del borde
@@ -61,6 +62,7 @@
             Ejercicio 1.2 -> Tablero ajedrez
         ============================================================= */
 
+        /*
         const anchoCuadricula = 50;
         const altoCuadricula = 50;
         const cantidadTotal = (canvas.width / anchoCuadricula) * (canvas.height / altoCuadricula);
@@ -102,7 +104,7 @@
                 cantidadY += 1;
             }
         }
-        
+        */
         // limpiar();
 
         /* =============================================================
@@ -159,4 +161,99 @@
         
        });
        */
-    
+
+
+       /* =============================================================
+            Ejercicio 3 — Movimiento lineal: pelota moviendose
+        ============================================================= */
+        
+        /*
+        let xPosition = 0;
+        let yPosition = 0;
+
+        // Primer cuadro
+        ctx.fillStyle = verdeMatrix;
+        ctx.fillRect(xPosition, yPosition, 30, 30);
+
+        setInterval(() => {
+            // Borramos el tramo anterior
+            ctx.fillStyle = fondoNegro;
+            ctx.fillRect(xPosition, yPosition, 30, 30);
+            
+
+            xPosition++; // Aumentamos la posicion en el eje X
+            yPosition++;
+
+            if(xPosition > 500) {
+                xPosition = 0;
+            }
+
+            if(yPosition > 500) {
+                yPosition = 0;
+            }
+            
+            // Dibujamos cuadros
+            ctx.fillStyle = "#00ff41";
+            ctx.fillRect(xPosition, yPosition, 30, 30);
+
+        }, 2);
+        */
+        
+
+
+        /* =============================================================
+            Ejercicio 4 — Rebotando en los bordes, colision con paredes
+        ============================================================= */
+
+        
+        let xPosition = 0;
+        let ancho = 30;
+        let alto = 30;
+        let xBorder = false;
+        let yLimit = false;
+
+        // Los limites son 0 y 470 (500 - 30px del cuadrado)
+        let yPosition = Math.floor(Math.random() * 470) + 1; 
+
+        // Primer cuadro
+        ctx.fillStyle = verdeMatrix;
+        ctx.fillRect(xPosition, yPosition, ancho, alto);
+
+        
+        setInterval(() => {
+            function movement(direction) {
+                // Borramos el tramo anterior
+                ctx.fillStyle = fondoNegro;
+                ctx.fillRect(xPosition, yPosition, ancho, alto);
+
+                if (direction == "right") {
+                    xPosition++;
+                } else {
+                    xPosition--;
+                }
+                console.log(xPosition);
+
+                // Pintamos el nuevo tramo
+                ctx.fillStyle = verdeMatrix;
+                ctx.fillRect(xPosition, yPosition, ancho, alto);
+            }
+
+            // Si es > 0 y no toco el borde, va a la derecha
+            if(xPosition >= 0 && !xBorder) {
+                movement("right");
+                if(xPosition == 470) {
+                    xBorder = !xBorder;
+                }
+            } 
+            
+            // Si es > 0 y ya toco borde, va a la izquierda
+            if(xPosition >= 0 && xBorder) {
+                //xBorder = !xBorder; // Indicamos que llego al limite
+                movement("left");
+                if(xPosition == 0) {
+                    xBorder = !xBorder;
+                }
+            }
+        
+        }, 1);
+        
