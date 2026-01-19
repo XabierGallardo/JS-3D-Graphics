@@ -18,6 +18,8 @@ limpiar();
 ```
 
 ##  Ejercicio 1 — Dibuja una cuadrícula (base para coordenadas)
+#### Aprender el **sistema de coordenadas del canvas** y entender la relación entre píxeles y unidades
+
 ```js
 const anchoCuadricula = 50;
 const altoCuadricula = 50;
@@ -45,6 +47,7 @@ for(let i = 0; i < cantidad; i++) {
 ---
 
 ##  Ejercicio 1.2 -> Tablero tipo ajedrez
+
 ```js
 const anchoCuadricula = 50;
 const altoCuadricula = 50;
@@ -95,6 +98,7 @@ for(let i = 0; i < cantidadTotal; i++) {
 
 
 ##  Ejercicio 2 — Dibuja un círculo donde haga clic el mouse
+#### Conectar **eventos → coordenadas → dibujo** para aprender a mapear valores
 
 ```js
 canvas.addEventListener("click", (event) => {
@@ -125,6 +129,7 @@ canvas.addEventListener("click", (event) => {
 
 
 ## Ejercicio 3 — Movimiento lineal: pelota moviendose
+#### Entendiendo el concepto de render loop
 
 ```js
 let xPosition = 0;
@@ -165,6 +170,7 @@ setInterval(() => {
 
 
 ## Ejercicio 4 — Rebotando en los bordes, colision con paredes
+#### Detección de colisiones
 
 ```js
 let xPosition = 0;
@@ -181,29 +187,36 @@ ctx.fillStyle = verdeMatrix;
 ctx.fillRect(xPosition, yPosition, ancho, alto);
 
 
-setInterval(() => {
-    function movement(direction) {
-        // Borramos el tramo anterior
-        ctx.fillStyle = fondoNegro;
-        ctx.fillRect(xPosition, yPosition, ancho, alto);
+// Movimiento de la pieza
+function movement(direction) {
+    // Borramos el tramo anterior
+    ctx.fillStyle = fondoNegro;
+    ctx.fillRect(xPosition, yPosition, ancho, alto);
 
-        if (direction == "right") {
-            xPosition++;
-        } else {
-            xPosition--;
-        }
-        console.log(xPosition);
-
-        // Pintamos el nuevo tramo
-        ctx.fillStyle = verdeMatrix;
-        ctx.fillRect(xPosition, yPosition, ancho, alto);
+    // Definimos la velocidad de frames
+    if (direction == "right") {
+        xPosition += 5;
+    } else {
+        xPosition -= 5;
     }
+    console.log(xPosition);
 
+    // Pintamos el nuevo tramo
+    ctx.fillStyle = verdeMatrix;
+    ctx.fillRect(xPosition, yPosition, ancho, alto);
+}
+
+// Loop principal del juego
+function loop() {
+
+    // Definimos el movimiento que va a tomar en funcion de su posicion en el eje x (horizontal)
+    
     // Si es > 0 y no toco el borde, va a la derecha
     if(xPosition >= 0 && !xBorder) {
         movement("right");
         if(xPosition == 470) {
             xBorder = !xBorder;
+
         }
     } 
     
@@ -216,7 +229,101 @@ setInterval(() => {
         }
     }
 
-}, 1);
+    requestAnimationFrame(loop);
+}
+
+loop();
 ```
 
 ![sample colision](img/4Colision.png)
+
+
+---
+
+
+## Ejercicio 4.1 — Rebotando en el borde inferior, simulando saltos
+#### Simulacion de fisica
+
+```js
+////////////////////////////
+// Variables del jugador //
+let ancho = 30; // Definimos los pixeles del cuadrado
+let alto = 30;
+let posicionX = (canvas.width / 2) - ancho; // 220 -> Centrado horizontal
+let posicionY = canvas.height - alto; 
+let piso = canvas.height - alto; // 470 -> Fijamos la posicion del suelo
+
+
+//////////////////////////
+// Variables de fisica //
+let velocidadY = 0; // Que tan rapido se mueve verticalmente
+let gravedad = 0.5; // Aceleracion constante hacia abajo (que tan rapido cae)
+let fuerzaSalto = -10; // Impulso inicial cara arriba (que tan fuerte salta)
+
+
+/////////////
+// Dibujo //
+function dibujar() {
+    // 1. Limpiamos todo el canvas (+ optimo)
+    ctx.fillStyle = fondoNegro; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 2. Dibujamos el cuadrado en su nueva posicion
+    ctx.fillStyle = verdeMatrix;
+    ctx.fillRect(posicionX, posicionY, ancho, alto);
+}
+
+
+/////////////////
+// Actualizar //
+function actualizar() { // Aplicamos la logica del salto
+    // Subir implica decrecer las coordenadas Y (0 arriba de todo, -470 piso)
+
+    velocidadY += gravedad; // Aplicamos gravedad a la velocidad
+    
+    posicionY += velocidadY; // Aplicamos velocidad a la posicion
+    
+    // Colision con el piso
+    if(posicionY > piso) {
+        posicionY = piso; // Lo forzamos a quedarse en el piso
+        velocidadY = 0; // Ya no hay movimiento vertical
+    }
+}
+
+
+////////////
+// Input //
+document.addEventListener("keydown", event => {
+    if(event.code === "Space") {
+        velocidadY = fuerzaSalto; // Aplicamos el impulso hacia arriba
+        
+        console.log(posicionY);
+    }
+});
+
+
+////////////////
+// Game Loop //
+function loop() { // Bucle principal
+    actualizar(); // Calculamos las matematicas
+    dibujar(); // Renderizamos en la pantalla
+
+    // Loop 60 veces x segundo, el juego esta activo esperando input
+    requestAnimationFrame(loop); // // Llamamos al siguiente frame
+    // console.log("test"); // Testeo de loop por consola
+}
+
+
+
+loop(); // Iniciar
+```
+
+---
+
+
+## Ejercicio 5 — Movimiento circular con seno y coseno
+#### Dibujar trayectorias circulares
+
+```js
+
+```
