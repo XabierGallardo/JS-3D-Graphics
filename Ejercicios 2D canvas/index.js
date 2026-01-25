@@ -343,7 +343,7 @@ Melloras:
     - salto: cambio instantaneo na velocidade cara arriba (negativo polas coordenadas "y")
 */
 
-
+/*
 ////////////////////////////
 // Variables del jugador //
 let ancho = 30; // Definimos los pixeles del cuadrado
@@ -415,6 +415,7 @@ function loop() { // Bucle principal
 
 
 loop(); // Iniciar
+*/
 
 
 
@@ -431,6 +432,147 @@ loop(); // Iniciar
 */
 
 
+
+
+
+/* ======================================================================
+    Ejercicio 4.2 —  Saltos + movimiento horizontal
+=======================================================================*/
+
+
+////////////////////////////
+// Variables del jugador //
+let ancho = 30; // Definimos los pixeles del cuadrado
+let alto = 30;
+let posicionX = (canvas.width / 2) - ancho; // 220 -> Centrado horizontal
+let posicionY = canvas.height - alto; 
+let piso = canvas.height - alto; // 470 -> Fijamos la posicion del suelo
+
+let paredDerecha = canvas.width - ancho;
+let paredIzquierda = 0;
+let movimientoDerecha = null;
+
+
+//////////////////////////
+// Variables de fisica //
+let velocidadY = 0; // Que tan rapido se mueve verticalmente
+let gravedad = 0.5; // Aceleracion constante hacia abajo (que tan rapido cae)
+let fuerzaSalto = -10; // Impulso inicial cara arriba (que tan fuerte salta)
+let fuerzaCaida = 10;
+
+let velocidadX = 0;
+let deceleracionDer = 0.5;
+let deceleracionIzq = -0.5;
+let fuerzaIzq = -15; 
+let fuerzaDer = 15; 
+
+
+/////////////
+// Dibujo //
+function dibujar() {
+    // 1. Limpiamos todo el canvas (+ optimo)
+    ctx.fillStyle = fondoNegro; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 2. Dibujamos el cuadrado en su nueva posicion
+    ctx.fillStyle = verdeMatrix;
+    ctx.fillRect(posicionX, posicionY, ancho, alto);
+}
+
+
+/////////////////
+// Actualizar //
+function actualizar() {
+    
+    ///////////////
+    // Salto (Subir implica decrecer las coordenadas Y (0 arriba de todo, -470 piso)
+    velocidadY += gravedad; // Aplicamos gravedad a la velocidad
+    posicionY += velocidadY; // Aplicamos velocidad a la posicion
+    
+    // Colision con el piso
+    if (posicionY > piso) {
+        posicionY = piso; // Lo forzamos a quedarse en el piso
+        velocidadY = 0; // Ya no hay movimiento vertical
+    }
+
+    // Colision con el techo
+    if (posicionY < 0) {
+        posicionY = 0;
+        velocidadY = 0;
+    }
+    
+
+    if (movimientoDerecha === true) {
+        velocidadX += deceleracionDer;
+        posicionX += velocidadX;
+    }
+    
+    if (movimientoDerecha === false) {
+        velocidadX -= deceleracionIzq;
+        posicionX -= velocidadX;
+    }
+
+    // Colision pared derecha
+    if (posicionX > paredDerecha) {
+        posicionX = paredDerecha;
+    }
+
+    // Colision pared izquierda
+    if (posicionX < paredIzquierda) {
+        posicionX = paredIzquierda;
+    }
+}
+
+
+
+////////////
+// Input //
+document.addEventListener("keydown", event => {
+
+    console.log(event.code)
+
+    //////////////////////////
+    // SALTO
+    if (event.code === "Space" || event.code === "ArrowUp") {
+        velocidadY = fuerzaSalto; // Aplicamos el impulso hacia arriba
+        console.log(posicionY);
+    }
+
+    if (event.code === "ArrowDown") {
+        velocidadY = fuerzaCaida;
+    }
+
+    //////////////////////////
+    // MOVIMIENTO HORIZONTAL
+    if (event.code === "ArrowRight") {
+        // posicionX += 20;
+        velocidadX = fuerzaDer;
+        movimientoDerecha = true;
+        velocidadX = 0;
+    }
+
+    if (event.code === "ArrowLeft") {
+        // posicionX -= 20;
+        velocidadX = fuerzaIzq;
+        movimientoDerecha = false;
+        velocidadX = 0;
+    }
+});
+
+
+////////////////
+// Game Loop //
+function loop() { // Bucle principal
+    actualizar(); // Calculamos las matematicas
+    dibujar(); // Renderizamos en la pantalla
+
+    // Loop 60 veces x segundo, el juego esta activo esperando input
+    requestAnimationFrame(loop); // // Llamamos al siguiente frame
+    // console.log("test"); // Testeo de loop por consola
+}
+
+
+loop(); // Iniciar
 
 
 
